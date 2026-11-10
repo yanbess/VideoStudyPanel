@@ -3,9 +3,7 @@
 A row of speed buttons right under YouTube and Udemy videos. One click, and the
 video plays at the speed you want — no digging through the settings menu.
 
-```
-Speed:  0.25×  0.5×  0.75×  1×  1.25×  [1.5×]  1.75×  2×  2.5×  3×
-```
+![The speed panel, with 1.5× chosen](docs/panel.png)
 
 ## What it does
 
