@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Video Speed Panel",
+  "version": "1.1.0",
+  "description": "Dark-themed panel of playback speed buttons below YouTube and Udemy videos.",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*", "https://*.udemy.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
