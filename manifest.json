@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Video Study Panel",
-  "version": "2.0.0",
-  "description": "A panel for learning from videos: control the playback speed and save screenshots of YouTube and Udemy lessons in one click.",
+  "version": "2.1.0",
+  "description": "Learn from videos: speed control and one-click screenshots on YouTube, Udemy, Coursera, Skillshare, Stepik and other course sites.",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
@@ -21,13 +21,46 @@
     "page": "popup.html",
     "open_in_tab": false
   },
-  "permissions": ["storage"],
+  "permissions": [
+    "storage"
+  ],
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/*", "https://*.udemy.com/*"],
-      "js": ["content.js"],
-      "css": ["styles.css"],
-      "run_at": "document_idle"
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://www.youtube-nocookie.com/*",
+        "https://*.udemy.com/*",
+        "https://www.coursera.org/*",
+        "https://*.edx.org/*",
+        "https://www.linkedin.com/learning/*",
+        "https://app.pluralsight.com/*",
+        "https://www.skillshare.com/*",
+        "https://www.domestika.org/*",
+        "https://www.masterclass.com/*",
+        "https://www.khanacademy.org/*",
+        "https://frontendmasters.com/*",
+        "https://egghead.io/*",
+        "https://stepik.org/*",
+        "https://*.skillbox.ru/*",
+        "https://netology.ru/*",
+        "https://practicum.yandex.ru/*",
+        "https://*.getcourse.ru/*",
+        "https://*.teachable.com/*",
+        "https://*.thinkific.com/*",
+        "https://*.mykajabi.com/*",
+        "https://player.vimeo.com/*",
+        "https://fast.wistia.net/*",
+        "https://fast.wistia.com/*",
+        "https://kinescope.io/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
     }
   ]
 }

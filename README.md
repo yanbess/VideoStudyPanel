@@ -1,9 +1,10 @@
 # Video Study Panel
 
 A panel for learning from videos: control the playback speed and take
-screenshots of the lesson. It is a row of speed buttons right under YouTube and
-Udemy videos, with a screenshot button at the end. One click, and the video
-plays at the speed you want — no digging through the settings menu. One more,
+screenshots of the lesson. It is a row of speed buttons right under the video,
+with a screenshot button at the end. It works on YouTube, Udemy, Coursera, and
+other course sites (see [Where it works](#where-it-works)). One click, and the
+video plays at the speed you want — no digging through the settings menu. One more,
 and the current frame is saved to your computer.
 
 ![The speed panel under a YouTube video, paused at 1×](docs/panel.png)
@@ -21,10 +22,11 @@ and the current frame is saved to your computer.
 - **Screenshot button** (the camera at the end of the panel, or the `S` key)
   pauses the video and saves the current frame to your Downloads folder, named
   like `12-34 - Video title (Channel).jpg`, where `12-34` is the moment in the
-  video. On Udemy there is no channel, so the name ends with the title. Some
-  protected Udemy courses do not allow screenshots.
-- **Your speed is remembered.** The next video, and the next lesson on Udemy,
-  start at the same speed, even after you close the browser.
+  video. Course sites have no channels, so there the name ends with the title.
+  Some paid courses protect their videos from copying, and screenshots do not
+  work there.
+- **Your speed is remembered.** The next video, and the next lesson of a
+  course, start at the same speed, even after you close the browser.
 - **Keyboard shortcuts keep working.** Space, the arrow keys, and the rest still
   control the video after you click a button.
 - Until you move it, the panel follows the player when you scroll, resize the
@@ -44,8 +46,23 @@ menu to keep it in sight). There you can:
 - **Change the panel size,** from 50% to 200%. *Reset size* brings back 100%.
 - **Reset the position.** The panel goes back under the video.
 
-It works on YouTube video pages (`youtube.com/watch…`) and on Udemy course
-lectures.
+## Where it works
+
+- **Video sites:** YouTube video pages (`youtube.com/watch…`), not Shorts.
+- **Course platforms:** Udemy, Coursera, edX, LinkedIn Learning, Pluralsight,
+  Skillshare, Domestika, MasterClass, Khan Academy, Frontend Masters,
+  egghead.io.
+- **Russian-language platforms:** Stepik, Skillbox, Нетология (Netology),
+  Яндекс Практикум (Yandex Practicum), and schools on GetCourse.
+- **Course builders:** schools hosted on Teachable, Thinkific, and Kajabi, at
+  their usual addresses (`*.teachable.com`, `*.thinkific.com`,
+  `*.mykajabi.com`).
+
+On these sites the panel controls the largest video of the lesson. It also
+reaches players that sites embed from YouTube, Vimeo, Wistia, and Kinescope.
+
+Schools with their own domain (for example a Teachable school at
+`courses.example.com`) are not covered yet.
 
 ## Install
 
@@ -92,8 +109,9 @@ The extension keeps only its settings, stored in your browser: the speed you
 chose, the panel's position and size, whether it is hidden, the hotkeys, and the
 screenshot format. Screenshots are saved straight to your computer. It does not
 collect, send, or share anything, and it has no access to your account, your
-history, or other sites. It only runs on YouTube and Udemy pages, and the only
-permission it asks for is storage, for those settings.
+history, or other sites. It only runs on the sites listed in
+[Where it works](#where-it-works), and the only permission it asks for is
+storage, for those settings.
 
 All of its code is in this repository, in a few small files.
 

@@ -8,7 +8,7 @@ Texts and answers to paste into the Developer Dashboard, field by field.
 
 **Summary** (from the manifest `description`, up to 132 characters):
 
-> A panel for learning from videos: control the playback speed and save screenshots of YouTube and Udemy lessons in one click.
+> Learn from videos: speed control and one-click screenshots on YouTube, Udemy, Coursera, Skillshare, Stepik and other course sites.
 
 **Category:** Education
 
@@ -27,11 +27,16 @@ A panel for learning from videos: control the playback speed and take screenshot
 • Screenshot button: pauses the video and saves the current frame as JPG or PNG, named like "12-34 - Video title (Channel).jpg".
 • Hide the panel and keep using only the hotkeys, if you prefer.
 
-Works on YouTube video pages and on Udemy course lectures.
+Works on:
+• YouTube video pages
+• Udemy, Coursera, edX, LinkedIn Learning, Pluralsight, Skillshare, Domestika, MasterClass, Khan Academy, Frontend Masters, egghead.io
+• Stepik, Skillbox, Netology, Yandex Practicum, GetCourse schools
+• Schools on Teachable, Thinkific and Kajabi
+• Players embedded from YouTube, Vimeo, Wistia and Kinescope on these sites
 
 Privacy: the extension stores only your settings, in your browser. It does not collect, send, or share anything.
 
-Not affiliated with YouTube, Google, or Udemy.
+Not affiliated with YouTube, Google, Udemy, or any of the sites above.
 ```
 
 **Graphic assets:**
@@ -57,15 +62,15 @@ magick -background none promo-440x280.svg -flatten ( ../icons/icon.svg -backgrou
 
 **Single purpose:**
 
-> Lets the user change the playback speed of YouTube and Udemy videos with on-page buttons and hotkeys, and save a screenshot of the current video frame.
+> Helps people learn from videos: change the playback speed of the lesson video with on-page buttons and hotkeys, and save a screenshot of the current frame.
 
 **Permission justification, `storage`:**
 
 > Saves the user's settings in the browser: the chosen speed, panel position and size, whether the panel is hidden, the hotkeys, and the screenshot format.
 
-**Host permission justification** (the content script runs on `https://www.youtube.com/*` and `https://*.udemy.com/*`):
+**Host permission justification** (the content script runs on the sites listed in `manifest.json`):
 
-> The extension adds its speed panel to video pages on these two sites and controls the video player on them. It does not run on any other site.
+> The extension adds its speed and screenshot panel to lesson videos on YouTube and on online course platforms (Udemy, Coursera, edX, LinkedIn Learning, Pluralsight, Skillshare, Domestika, MasterClass, Khan Academy, Frontend Masters, egghead.io, Stepik, Skillbox, Netology, Yandex Practicum, GetCourse, Teachable, Thinkific, Kajabi), and controls their video player. Access to the YouTube, Vimeo, Wistia, and Kinescope player addresses is needed because these platforms embed their lesson videos from them; inside those players the extension acts only when the page around them is one of the course sites above. It does not run on any other site, and it reads or sends no page content.
 
 **Remote code:** No, I am not using remote code.
 
