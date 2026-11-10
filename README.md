@@ -7,6 +7,8 @@ other course sites (see [Where it works](#where-it-works)). One click, and the
 video plays at the speed you want — no digging through the settings menu. One more,
 and the current frame is saved to your computer.
 
+![The panel up close: drag handle, ten speeds with 1.75× chosen, and the screenshot button](docs/panel-closeup.png)
+
 ![The speed panel under a YouTube video, paused at 1×](docs/panel.png)
 
 ## What it does
