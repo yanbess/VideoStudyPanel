@@ -1,0 +1,17 @@
+# Private key Chrome writes when packing the extension: it signs updates and
+# must never be public.
+*.pem
+
+# Packed builds
+*.crx
+*.zip
+*.xpi
+
+# Local settings and system files
+.vscode/
+.idea/
+.env
+.env.*
+Thumbs.db
+desktop.ini
+.DS_Store
