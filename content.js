@@ -603,6 +603,9 @@
     function position() {
       const panel = document.getElementById(PANEL_ID);
       if (!panel || !target) return;
+      // While dragging, the pointer places the panel. Pages keep changing meanwhile
+      // (YouTube does all the time), and each change re-runs this function
+      if (panel.classList.contains('ysp-dragging')) return;
       const rect = target.rect();
       if (rect.width === 0 || rect.height === 0) {
         panel.style.display = 'none';
@@ -612,7 +615,6 @@
       const custom = settings.positions[siteName];
       panel.classList.toggle('ysp-custom', !!custom);
       if (custom) {
-        if (panel.classList.contains('ysp-dragging')) return;
         const pos = clampToViewport(custom.x, custom.y, panel);
         panel.style.left = pos.x + 'px';
         panel.style.top = pos.y + 'px';
