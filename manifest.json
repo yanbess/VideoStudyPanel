@@ -1,8 +1,26 @@
 {
   "manifest_version": 3,
-  "name": "Video Speed Panel",
-  "version": "1.1.0",
-  "description": "Dark-themed panel of playback speed buttons below YouTube and Udemy videos.",
+  "name": "Video Study Panel",
+  "version": "2.0.0",
+  "description": "A panel for learning from videos: control the playback speed and save screenshots of YouTube and Udemy lessons in one click.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    },
+    "default_title": "Video Study Panel settings",
+    "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "popup.html",
+    "open_in_tab": false
+  },
   "permissions": ["storage"],
   "content_scripts": [
     {

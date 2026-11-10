@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Video Study Panel</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icons/icon32.png" alt="" width="24" height="24">
+    <h1>Video Study Panel</h1>
+  </header>
+
+  <section>
+    <label class="row switch-row">
+      <span>Hide panel</span>
+      <input type="checkbox" id="hidden">
+    </label>
+    <p class="hint">Hotkeys keep working while the panel is hidden.</p>
+  </section>
+
+  <section>
+    <h2>Hotkeys</h2>
+    <div class="row">
+      <span>Speed up</span>
+      <button type="button" class="hotkey" data-action="faster"></button>
+    </div>
+    <div class="row">
+      <span>Slow down</span>
+      <button type="button" class="hotkey" data-action="slower"></button>
+    </div>
+    <div class="row">
+      <span>Screenshot</span>
+      <button type="button" class="hotkey" data-action="screenshot"></button>
+    </div>
+    <p class="hint">Click a key box, then press the new key. Esc cancels.</p>
+    <button type="button" id="reset-hotkeys" class="link">Restore defaults (+, −, S)</button>
+  </section>
+
+  <section>
+    <h2>Screenshot format</h2>
+    <div class="segmented">
+      <label><input type="radio" name="shot-format" value="jpg"><span>JPG</span></label>
+      <label><input type="radio" name="shot-format" value="png"><span>PNG</span></label>
+    </div>
+    <p class="hint">JPG: small files. PNG: lossless, sharper text, 5–10× larger.</p>
+  </section>
+
+  <section>
+    <h2>Panel size</h2>
+    <div class="row">
+      <input type="range" id="scale" min="50" max="200" step="5">
+      <span id="scale-value" class="scale-value"></span>
+    </div>
+    <button type="button" id="reset-scale" class="link">Reset size</button>
+  </section>
+
+  <section>
+    <h2>Panel position</h2>
+    <button type="button" id="reset-position" class="wide">Reset position</button>
+    <p class="hint" id="position-status"></p>
+  </section>
+
+  <footer>
+    <span id="version"></span>
+    <a href="https://github.com/yanbess/VideoStudyPanel" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,9 +1,12 @@
-# Video Speed Panel
+# Video Study Panel
 
-A row of speed buttons right under YouTube and Udemy videos. One click, and the
-video plays at the speed you want — no digging through the settings menu.
+A panel for learning from videos: control the playback speed and take
+screenshots of the lesson. It is a row of speed buttons right under YouTube and
+Udemy videos, with a screenshot button at the end. One click, and the video
+plays at the speed you want — no digging through the settings menu. One more,
+and the current frame is saved to your computer.
 
-![The speed panel, with 1.5× chosen](docs/panel.png)
+![The speed panel under a YouTube video, paused at 1×](docs/panel.png)
 
 ## What it does
 
@@ -11,12 +14,35 @@ video plays at the speed you want — no digging through the settings menu.
 - **The current speed is lit up** in blue, so you always see it at a glance.
 - **Click the lit-up button to pause.** It turns into ▶; click it again to
   play.
+- **Drag it anywhere.** Grab the dotted handle on the left of the panel and drop
+  it where you like; it stays there on the next videos too.
+- **Hotkeys:** `+` speeds up, `-` slows down (by one step, from 0.25× to 3×).
+  The new speed briefly shows over the video. You can pick other keys.
+- **Screenshot button** (the camera at the end of the panel, or the `S` key)
+  pauses the video and saves the current frame to your Downloads folder, named
+  like `12-34 - Video title (Channel).jpg`, where `12-34` is the moment in the
+  video. On Udemy there is no channel, so the name ends with the title. Some
+  protected Udemy courses do not allow screenshots.
 - **Your speed is remembered.** The next video, and the next lesson on Udemy,
   start at the same speed, even after you close the browser.
 - **Keyboard shortcuts keep working.** Space, the arrow keys, and the rest still
   control the video after you click a button.
-- The panel follows the player when you scroll, resize the window, or switch to
-  theater mode, and it matches YouTube's dark look.
+- Until you move it, the panel follows the player when you scroll, resize the
+  window, or switch to theater mode, and it matches YouTube's dark look.
+
+## Settings
+
+Click the extension's icon in the browser toolbar (pin it from the puzzle-piece
+menu to keep it in sight). There you can:
+
+- **Hide the panel.** The hotkeys keep working.
+- **Change the hotkeys** for speed up, slow down, and screenshot. Click a key
+  box and press the new key, with Ctrl, Alt or Shift if you want. *Restore
+  defaults* brings back `+`, `−` and `S`.
+- **Pick the screenshot format:** JPG (the default, small files) or PNG
+  (lossless, best for slides and code, but 5–10 times larger).
+- **Change the panel size,** from 50% to 200%. *Reset size* brings back 100%.
+- **Reset the position.** The panel goes back under the video.
 
 It works on YouTube video pages (`youtube.com/watch…`) and on Udemy course
 lectures.
@@ -29,7 +55,7 @@ Opera, Vivaldi**, and other browsers built on Chrome.
 
 1. At the top of this page, click the green **Code** button, then **Download
    ZIP**.
-2. Unzip the file into a folder you will keep, such as `Documents\Video Speed
+2. Unzip the file into a folder you will keep, such as `Documents\Video Study
    Panel`. The browser loads the extension from that folder, so do not delete
    it afterwards.
 3. Open the extensions page of your browser. Type this in the address bar and
@@ -57,23 +83,26 @@ page. Your saved speed stays.
 
 ## Remove
 
-On the extensions page, click **Remove** on the **Video Speed Panel** card. You
+On the extensions page, click **Remove** on the **Video Study Panel** card. You
 can then delete its folder.
 
 ## Privacy
 
-The extension keeps one thing: the speed you chose, stored in your browser. It
-does not collect, send, or share anything, and it has no access to your account,
-your history, or other sites. It only runs on YouTube and Udemy pages, and the
-only permission it asks for is storage, for that one setting.
+The extension keeps only its settings, stored in your browser: the speed you
+chose, the panel's position and size, whether it is hidden, the hotkeys, and the
+screenshot format. Screenshots are saved straight to your computer. It does not
+collect, send, or share anything, and it has no access to your account, your
+history, or other sites. It only runs on YouTube and Udemy pages, and the only
+permission it asks for is storage, for those settings.
 
-All of its code is in this repository, in three small files.
+All of its code is in this repository, in a few small files.
 
 ## Questions
 
 **I do not see the panel.**
-Reload the page. On YouTube, the panel shows on regular video pages, not on
-Shorts, the home page, or videos embedded in other sites. Check also that the
+Check that *Hide panel* is off in the settings, then reload the page. On
+YouTube, the panel shows on regular video pages, not on Shorts, the home page,
+or videos embedded in other sites. Check also that the
 extension is turned on in the extensions page.
 
 **The speed changes back by itself.**

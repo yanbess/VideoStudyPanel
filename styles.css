@@ -1,3 +1,4 @@
+/* --ysp-scale is the panel size from the settings (1 = 100%) */
 #yt-speed-panel {
   position: fixed;
   z-index: 2000;
@@ -5,35 +6,70 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: calc(6px * var(--ysp-scale, 1));
   margin: 0;
-  padding: 8px 12px;
+  padding: calc(8px * var(--ysp-scale, 1)) calc(12px * var(--ysp-scale, 1));
   width: max-content;
   max-width: 95vw;
   box-sizing: border-box;
   background: #1f1f1f;
   border: 1px solid #333;
-  border-radius: 12px;
+  border-radius: calc(12px * var(--ysp-scale, 1));
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   font-family: "Roboto", "Arial", sans-serif;
 }
 
-#yt-speed-panel .ysp-label {
-  align-self: center;
-  margin-right: 6px;
-  color: #aaa;
-  font-size: 13px;
+/* Once dragged, left/top are the panel's top-left corner, not its center */
+#yt-speed-panel.ysp-custom {
+  transform: none;
+}
+
+#yt-speed-panel .ysp-grip {
+  align-self: stretch;
+  width: calc(14px * var(--ysp-scale, 1));
+  margin: calc(-2px * var(--ysp-scale, 1)) calc(2px * var(--ysp-scale, 1)) calc(-2px * var(--ysp-scale, 1)) calc(-4px * var(--ysp-scale, 1));
+  border-radius: calc(6px * var(--ysp-scale, 1));
+  cursor: grab;
+  touch-action: none;
+  /* six dots, 2 columns x 3 rows */
+  background-image: radial-gradient(circle, #777 calc(1.5px * var(--ysp-scale, 1)), transparent calc(1.6px * var(--ysp-scale, 1)));
+  background-size: calc(6px * var(--ysp-scale, 1)) calc(6px * var(--ysp-scale, 1));
+  background-position: center;
+  background-repeat: space;
+  background-origin: content-box;
+  padding: calc(6px * var(--ysp-scale, 1)) calc(1px * var(--ysp-scale, 1));
+  box-sizing: border-box;
+}
+
+#yt-speed-panel .ysp-grip:hover {
+  background-color: #2b2b2b;
+}
+
+#yt-speed-panel.ysp-dragging,
+#yt-speed-panel.ysp-dragging .ysp-grip {
+  cursor: grabbing;
   user-select: none;
 }
 
+#yt-speed-panel.ysp-dragging {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+
 #yt-speed-panel button {
-  min-width: 48px;
-  padding: 6px 10px;
+  /* Fixed height: the ▶ glyph is taller than the digits and would stretch the panel */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: calc(30px * var(--ysp-scale, 1));
+  min-width: calc(48px * var(--ysp-scale, 1));
+  padding: 0 calc(10px * var(--ysp-scale, 1));
+  line-height: 1;
   background: #2b2b2b;
   color: #e8e8e8;
   border: 1px solid #3d3d3d;
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: calc(8px * var(--ysp-scale, 1));
+  font-size: calc(13px * var(--ysp-scale, 1));
   font-weight: 500;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
@@ -48,4 +84,44 @@
   background: #3ea6ff;
   border-color: #3ea6ff;
   color: #0f0f0f;
+}
+
+/* Vertical line between the speeds and the screenshot button */
+#yt-speed-panel .ysp-sep {
+  align-self: center;
+  width: 1px;
+  height: calc(20px * var(--ysp-scale, 1));
+  margin: 0 calc(2px * var(--ysp-scale, 1));
+  background: #444;
+}
+
+#yt-speed-panel button.ysp-shot {
+  min-width: calc(40px * var(--ysp-scale, 1));
+  padding: 0 calc(10px * var(--ysp-scale, 1));
+}
+
+#yt-speed-panel .ysp-shot svg {
+  display: block;
+  width: calc(17px * var(--ysp-scale, 1));
+  height: calc(17px * var(--ysp-scale, 1));
+}
+
+/* Speed shown over the player after a hotkey */
+#yt-speed-toast {
+  position: fixed;
+  z-index: 2001;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  border-radius: 8px;
+  font: 500 20px "Roboto", "Arial", sans-serif;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+#yt-speed-toast.ysp-show {
+  opacity: 1;
+  transition: none;
 }
