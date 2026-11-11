@@ -23,7 +23,9 @@ and the current frame is saved to your computer.
 - **Click the lit-up button to pause.** It turns into ▶; click it again to
   play.
 - **Drag it anywhere.** Grab the dotted handle on the left of the panel and drop
-  it where you like; it stays there on the next videos too.
+  it where you like. It keeps that place next to the video: it scrolls with the
+  page, follows the player into theater mode, and is there on the next videos
+  too.
 - **Hotkeys:** `+` speeds up, `-` slows down (by one step, from 0.25× to 3×).
   The new speed briefly shows over the video. You can pick other keys.
 - **Screenshot button** (the camera at the end of the panel, or the `S` key)
@@ -36,8 +38,8 @@ and the current frame is saved to your computer.
   course, start at the same speed, even after you close the browser.
 - **Keyboard shortcuts keep working.** Space, the arrow keys, and the rest still
   control the video after you click a button.
-- Until you move it, the panel follows the player when you scroll, resize the
-  window, or switch to theater mode, and it matches YouTube's dark look.
+- The panel scrolls with the page and follows the player when you resize the
+  window or switch to theater mode, and it matches YouTube's dark look.
 
 ## Settings
 

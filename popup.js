@@ -89,7 +89,7 @@ hiddenBox.addEventListener('change', () => {
 });
 
 document.getElementById('reset-position').addEventListener('click', () => {
-  chrome.storage.local.set({ positions: {} });
+  chrome.storage.local.set({ offsets: {} });
   positionStatus.textContent = 'The panel is back under the video.';
 });
 

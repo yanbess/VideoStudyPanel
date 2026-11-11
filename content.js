@@ -12,7 +12,7 @@
     hidden: false, // every site but YouTube
     ytChannels: {}, // YouTube channel path (/@handle) -> true: the panel is shown for it
     scale: 1, // panel size, 1 = 100%
-    positions: {}, // site name -> { x, y } of the panel's top-left corner, in viewport px
+    offsets: {}, // site name -> { dx, dy } of the dragged panel's top-left corner from the player's
     hotkeys: {
       faster: { key: '+', ctrl: false, alt: false, meta: false, shift: false },
       slower: { key: '-', ctrl: false, alt: false, meta: false, shift: false },
@@ -130,7 +130,7 @@
     if (changes.ytChannels) settings.ytChannels = changes.ytChannels.newValue || {};
     if (changes.shotFormat) settings.shotFormat = changes.shotFormat.newValue || 'jpg';
     if (changes.scale) settings.scale = Number(changes.scale.newValue) || 1;
-    if (changes.positions) settings.positions = changes.positions.newValue || {};
+    if (changes.offsets) settings.offsets = changes.offsets.newValue || {};
     if (changes.hotkeys) settings.hotkeys = { ...DEFAULTS.hotkeys, ...changes.hotkeys.newValue };
     if (changes.speed) settings.speed = Number(changes.speed.newValue) || 1;
   }
@@ -268,6 +268,8 @@
     const known = Object.entries(SITES).find(([, s]) => s.test.test(location.hostname));
     const siteName = known ? known[0] : location.hostname.replace(/^www\./, '');
     const site = { ...GENERIC, ...(known ? known[1] : {}) };
+
+    try { chrome.storage.local.remove('positions'); } catch (e) { /* old viewport positions, see offsets */ }
 
     let target = null; // what the panel controls now, see localTarget/frameTarget
     let boundVideo = null;
@@ -535,40 +537,54 @@
 
     // ---------- Dragging ----------
 
-    function clampToViewport(x, y, panel) {
-      const w = panel.offsetWidth;
-      const h = panel.offsetHeight;
-      const maxX = Math.max(MARGIN, window.innerWidth - w - MARGIN);
-      const maxY = Math.max(MARGIN, window.innerHeight - h - MARGIN);
-      return {
-        x: Math.min(Math.max(x, MARGIN), maxX),
-        y: Math.min(Math.max(y, MARGIN), maxY),
-      };
+    // Keeps the panel inside the window horizontally (vertically it scrolls with the page)
+    function clampX(x, panel) {
+      const maxX = Math.max(MARGIN, document.documentElement.clientWidth - panel.offsetWidth - MARGIN);
+      return Math.min(Math.max(x, MARGIN), maxX);
+    }
+
+    // The panel is position: absolute, so it scrolls with the page by itself. Its
+    // left/top are relative to its containing block (the document, or a positioned
+    // ancestor some sites add to <body>), which this places at viewport x/y.
+    function placeAt(panel, x, y) {
+      // A new panel has no left/top yet and would be measured at its place in the flow
+      if (!panel.style.left) panel.style.left = '0px';
+      if (!panel.style.top) panel.style.top = '0px';
+      const r = panel.getBoundingClientRect();
+      const originX = r.left - (parseFloat(panel.style.left) || 0);
+      const originY = r.top - (parseFloat(panel.style.top) || 0);
+      panel.style.left = Math.round(x - originX) + 'px';
+      panel.style.top = Math.round(y - originY) + 'px';
     }
 
     function startDrag(e, panel) {
-      if (e.button !== 0) return;
+      if (e.button !== 0 || !target) return;
       e.preventDefault();
       const grip = e.currentTarget;
       const rect = panel.getBoundingClientRect();
       const dx = e.clientX - rect.left;
       const dy = e.clientY - rect.top;
-      let pos = { x: rect.left, y: rect.top };
-      panel.classList.add('ysp-custom', 'ysp-dragging');
+      panel.classList.add('ysp-dragging');
       grip.setPointerCapture(e.pointerId);
 
       const move = (ev) => {
-        pos = clampToViewport(ev.clientX - dx, ev.clientY - dy, panel);
-        panel.style.left = pos.x + 'px';
-        panel.style.top = pos.y + 'px';
+        const maxY = Math.max(MARGIN, window.innerHeight - panel.offsetHeight - MARGIN);
+        const y = Math.min(Math.max(ev.clientY - dy, MARGIN), maxY);
+        placeAt(panel, clampX(ev.clientX - dx, panel), y);
       };
       const end = () => {
         grip.removeEventListener('pointermove', move);
         grip.removeEventListener('pointerup', end);
         grip.removeEventListener('pointercancel', end);
         panel.classList.remove('ysp-dragging');
-        settings.positions = { ...settings.positions, [siteName]: pos };
-        save({ positions: settings.positions });
+        // Remembered relative to the player, so the panel keeps its place next to
+        // the video on scrolling, in theater mode, and on the next videos
+        const p = panel.getBoundingClientRect();
+        const v = target ? target.rect() : null;
+        if (!v || !v.width) return;
+        const offset = { dx: Math.round(p.left - v.left), dy: Math.round(p.top - v.top) };
+        settings.offsets = { ...settings.offsets, [siteName]: offset };
+        save({ offsets: settings.offsets });
       };
       move(e);
       grip.addEventListener('pointermove', move);
@@ -612,9 +628,10 @@
       return panel;
     }
 
-    // By default the panel sits centered right below the player, in viewport coordinates
-    // (position: fixed, so it also follows players inside inner scroll containers).
-    // Once dragged, it stays where it was dropped.
+    // By default the panel sits centered right below the player; once dragged, it
+    // keeps the same offset from the player's top-left corner. It is placed in page
+    // coordinates and scrolls with the page; scrolling inside an inner container
+    // (many course sites) re-runs this function.
     function position() {
       const panel = document.getElementById(PANEL_ID);
       if (!panel || !target) return;
@@ -627,16 +644,12 @@
         return;
       }
       panel.style.display = '';
-      const custom = settings.positions[siteName];
-      panel.classList.toggle('ysp-custom', !!custom);
+      const custom = settings.offsets[siteName];
       if (custom) {
-        const pos = clampToViewport(custom.x, custom.y, panel);
-        panel.style.left = pos.x + 'px';
-        panel.style.top = pos.y + 'px';
+        placeAt(panel, clampX(rect.left + custom.dx, panel), rect.top + custom.dy);
         return;
       }
-      panel.style.top = rect.bottom + GAP + 'px';
-      panel.style.left = rect.left + rect.width / 2 + 'px';
+      placeAt(panel, clampX(rect.left + rect.width / 2 - panel.offsetWidth / 2, panel), rect.bottom + GAP);
     }
 
     // ---------- Showing and hiding ----------
@@ -764,7 +777,7 @@
       ytChannels: data.ytChannels || {},
       scale: Number(data.scale) || 1,
       shotFormat: data.shotFormat || 'jpg',
-      positions: data.positions || {},
+      offsets: data.offsets || {},
       hotkeys: { ...DEFAULTS.hotkeys, ...data.hotkeys },
     };
     if (window === window.top) runOnPage();

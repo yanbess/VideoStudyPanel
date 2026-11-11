@@ -1,8 +1,8 @@
 /* --ysp-scale is the panel size from the settings (1 = 100%) */
 #yt-speed-panel {
-  position: fixed;
+  /* Placed in page coordinates by content.js, so it scrolls with the page */
+  position: absolute;
   z-index: 2000;
-  transform: translateX(-50%);
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -17,11 +17,6 @@
   border-radius: calc(12px * var(--ysp-scale, 1));
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   font-family: "Roboto", "Arial", sans-serif;
-}
-
-/* Once dragged, left/top are the panel's top-left corner, not its center */
-#yt-speed-panel.ysp-custom {
-  transform: none;
 }
 
 #yt-speed-panel .ysp-grip {
