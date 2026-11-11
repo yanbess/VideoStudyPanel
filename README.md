@@ -13,6 +13,11 @@ and the current frame is saved to your computer.
 
 ## What it does
 
+- **On YouTube, you choose the channels.** The panel is off by default there.
+  Click the **Speed panel** button next to Like (it looks like YouTube's own
+  buttons) to turn it on: it stays on for every video of that channel, and off
+  for the rest. Click it again to turn it off. On course sites the panel is on
+  everywhere, unless you hide it in the settings.
 - **Ten speeds, from 0.25× to 3×.** YouTube's own menu stops at 2×.
 - **The current speed is lit up** in blue, so you always see it at a glance.
 - **Click the lit-up button to pause.** It turns into ▶; click it again to
@@ -39,7 +44,9 @@ and the current frame is saved to your computer.
 Click the extension's icon in the browser toolbar (pin it from the puzzle-piece
 menu to keep it in sight). There you can:
 
-- **Hide the panel.** The hotkeys keep working.
+- **Hide the panel on course sites.** This one switch covers every site but
+  YouTube, where the panel is turned on per channel with the **Speed panel**
+  button next to Like. The hotkeys keep working while the panel is hidden.
 - **Change the hotkeys** for speed up, slow down, and screenshot. Click a key
   box and press the new key, with Ctrl, Alt or Shift if you want. *Restore
   defaults* brings back `+`, `−` and `S`.
@@ -86,7 +93,9 @@ Opera, Vivaldi**, and other browsers built on Chrome.
    left).
 5. Click **Load unpacked** and choose the unzipped folder, the one that has
    `manifest.json` in it.
-6. Open any YouTube video. The panel appears right under it.
+6. Open any YouTube video and click **Speed panel** next to the Like button.
+   The panel appears right under the video, and from now on it shows on all
+   videos of that channel. On course sites it shows right away.
 
 If YouTube was already open, reload its tab once.
 
@@ -108,8 +117,8 @@ can then delete its folder.
 ## Privacy
 
 The extension keeps only its settings, stored in your browser: the speed you
-chose, the panel's position and size, whether it is hidden, the hotkeys, and the
-screenshot format. Screenshots are saved straight to your computer. It does not
+chose, the panel's position and size, whether it is hidden, the YouTube
+channels you turned it on for, the hotkeys, and the screenshot format. Screenshots are saved straight to your computer. It does not
 collect, send, or share anything, and it has no access to your account, your
 history, or other sites. It only runs on the sites listed in
 [Where it works](#where-it-works), and the only permission it asks for is
@@ -120,7 +129,9 @@ All of its code is in this repository, in a few small files.
 ## Questions
 
 **I do not see the panel.**
-Check that *Hide panel* is off in the settings, then reload the page. On
+On YouTube, it is off until you turn it on for the channel: click **Speed
+panel** next to the Like button. On course sites, check that *Hide panel on
+course sites* is off in the settings, then reload the page. On
 YouTube, the panel shows on regular video pages, not on Shorts, the home page,
 or videos embedded in other sites. Check also that the
 extension is turned on in the extensions page.

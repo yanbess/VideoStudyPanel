@@ -19,13 +19,14 @@ Texts and answers to paste into the Developer Dashboard, field by field.
 ```
 A panel for learning from videos: control the playback speed and take screenshots of the lesson. A row of speed buttons sits right under the video, with a screenshot button at the end. One click, and the video plays at the speed you want: no digging through the settings menu. One more, and the current frame is saved to your computer.
 
+• On YouTube, turn the panel on only for the channels you study with: a "Speed panel" button next to Like, in YouTube's own style. It is remembered per channel and off by default. On course sites the panel is on everywhere.
 • Ten speeds, from 0.25× to 3×. YouTube's own menu stops at 2×.
 • The current speed is lit up. Click it again to pause, and once more to play.
 • Your speed is remembered for the next videos, even after you restart the browser.
 • Drag the panel anywhere on the page by its handle, and resize it from 50% to 200%.
 • Hotkeys: + speeds up, − slows down, S takes a screenshot. All three can be changed.
 • Screenshot button: pauses the video and saves the current frame as JPG or PNG, named like "12-34 - Video title (Channel).jpg".
-• Hide the panel and keep using only the hotkeys, if you prefer.
+• Hide the panel on course sites and keep using only the hotkeys, if you prefer.
 
 Works on:
 • YouTube video pages
@@ -66,7 +67,7 @@ magick -background none promo-440x280.svg -flatten ( ../icons/icon.svg -backgrou
 
 **Permission justification, `storage`:**
 
-> Saves the user's settings in the browser: the chosen speed, panel position and size, whether the panel is hidden, the hotkeys, and the screenshot format.
+> Saves the user's settings in the browser: the chosen speed, panel position and size, whether the panel is hidden, the YouTube channels the panel is turned on for, the hotkeys, and the screenshot format.
 
 **Host permission justification** (the content script runs on the sites listed in `manifest.json`):
 

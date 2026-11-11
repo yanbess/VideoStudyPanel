@@ -125,3 +125,42 @@
   opacity: 1;
   transition: none;
 }
+
+/* On/off button before YouTube's Like button, styled like its neighbours
+   (YouTube's theme variables, so it follows the light and dark themes) */
+#ysp-yt-toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  box-sizing: border-box;
+  height: 36px;
+  margin: 0 8px 0 0;
+  padding: 0 16px 0 10px;
+  background: var(--yt-spec-badge-chip-background, rgba(255, 255, 255, 0.1));
+  color: var(--yt-spec-text-primary, #f1f1f1);
+  border: none;
+  border-radius: 18px;
+  font: 500 14px/36px "Roboto", "Arial", sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+#ysp-yt-toggle:hover {
+  background: var(--yt-spec-button-chip-background-hover, rgba(255, 255, 255, 0.2));
+}
+
+#ysp-yt-toggle svg {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin-right: 6px;
+}
+
+/* On: the gauge turns the panel's blue */
+#ysp-yt-toggle.ysp-on svg {
+  color: #3ea6ff;
+}
+
+html:not([dark]) #ysp-yt-toggle.ysp-on svg {
+  color: #065fd4;
+}

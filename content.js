@@ -2,13 +2,15 @@
   const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3];
   const PANEL_ID = 'yt-speed-panel';
   const TOAST_ID = 'yt-speed-toast';
+  const YT_TOGGLE_ID = 'ysp-yt-toggle'; // the on/off button next to Like on YouTube
   const GAP = 8; // px between the player and the panel
   const MARGIN = 4; // px the dragged panel keeps from the window edges
   const MIN_VIDEO_AREA = 200 * 112; // smaller videos are previews and thumbnails, not lessons
   const MSG = '__videoStudyPanel'; // marks our messages between the page and its video frames
   const DEFAULTS = {
     speed: 1,
-    hidden: false,
+    hidden: false, // every site but YouTube
+    ytChannels: {}, // YouTube channel path (/@handle) -> true: the panel is shown for it
     scale: 1, // panel size, 1 = 100%
     positions: {}, // site name -> { x, y } of the panel's top-left corner, in viewport px
     hotkeys: {
@@ -125,6 +127,7 @@
 
   function onSettingsChanged(changes) {
     if (changes.hidden) settings.hidden = !!changes.hidden.newValue;
+    if (changes.ytChannels) settings.ytChannels = changes.ytChannels.newValue || {};
     if (changes.shotFormat) settings.shotFormat = changes.shotFormat.newValue || 'jpg';
     if (changes.scale) settings.scale = Number(changes.scale.newValue) || 1;
     if (changes.positions) settings.positions = changes.positions.newValue || {};
@@ -229,6 +232,16 @@
         || document.title.replace(/\s*-\s*YouTube\s*$/, ''),
       channel: () => (document.querySelector('ytd-watch-metadata ytd-channel-name a')
         || document.querySelector('ytd-watch-metadata #owner #channel-name #text'))?.textContent || '',
+      // The channel's address (/@handle or /channel/UC…), to remember the panel per channel
+      channelKey: () => {
+        const href = document.querySelector('ytd-watch-metadata ytd-channel-name a, ytd-watch-metadata #owner a[href]')
+          ?.getAttribute('href');
+        if (!href) return '';
+        const m = new URL(href, location.origin).pathname.match(/^\/(@[^/]+|channel\/[^/]+|c\/[^/]+|user\/[^/]+)/);
+        return m ? '/' + decodeURIComponent(m[1]) : '';
+      },
+      // The panel is off by default on YouTube and turned on per channel
+      perChannel: true,
       guardOwnRate: false, // YouTube keeps the speed; its own menu must keep working
       ownsVideoFrames: false, // youtube.com pages do not embed lessons in frames
     },
@@ -245,6 +258,8 @@
     getVideo: largestVideo,
     title: () => document.title.replace(TITLE_SUFFIX, ''),
     channel: () => '',
+    channelKey: () => '',
+    perChannel: false, // one global "Hide panel" setting
     guardOwnRate: true,
     ownsVideoFrames: true,
   };
@@ -624,19 +639,75 @@
       panel.style.left = rect.left + rect.width / 2 + 'px';
     }
 
+    // ---------- Showing and hiding ----------
+
+    // On YouTube the panel is off until it is turned on for the video's channel;
+    // everywhere else one global setting hides it
+    function panelHidden() {
+      if (!site.perChannel) return settings.hidden;
+      const key = site.channelKey();
+      return !key || !settings.ytChannels[key];
+    }
+
+    function toggleChannel() {
+      const key = site.channelKey();
+      if (!key) return;
+      const channels = { ...settings.ytChannels };
+      if (channels[key]) delete channels[key];
+      else channels[key] = true;
+      settings.ytChannels = channels;
+      save({ ytChannels: channels });
+      ensurePanel();
+    }
+
+    const GAUGE_SVG =
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 4a10 10 0 0 0-8.66 15l1.73-1A8 8 0 1 1 18.93 18l1.73 1A10 10 0 0 0 12 4Z"/><path fill="currentColor" d="m17.5 8.5-5.04 4.6a2 2 0 1 0 1.44 1.44L17.5 8.5Z"/></svg>';
+
+    // The on/off button next to YouTube's Like button, in the same style as its neighbours
+    function ensureChannelToggle() {
+      let btn = document.getElementById(YT_TOGGLE_ID);
+      const key = site.perChannel ? site.channelKey() : '';
+      const row = key && document.querySelector('ytd-watch-metadata #top-level-buttons-computed');
+      if (!row) {
+        btn?.remove();
+        return;
+      }
+      if (!btn) {
+        btn = document.createElement('button');
+        btn.id = YT_TOGGLE_ID;
+        btn.type = 'button';
+        btn.innerHTML = GAUGE_SVG + '<span>Speed panel</span>';
+        btn.addEventListener('click', toggleChannel);
+        btn.addEventListener('mousedown', (e) => e.preventDefault());
+      }
+      const like = row.querySelector('segmented-like-dislike-button-view-model, ytd-segmented-like-dislike-button-renderer, like-button-view-model');
+      const anchor = like ? like.closest('#top-level-buttons-computed > *') || like : row.firstElementChild;
+      if (anchor !== btn && (btn.parentElement !== anchor?.parentElement || btn.nextElementSibling !== anchor)) {
+        if (anchor) anchor.parentElement.insertBefore(btn, anchor);
+        else row.appendChild(btn);
+      }
+      const on = !!settings.ytChannels[key];
+      if (btn.classList.contains('ysp-on') !== on) btn.classList.toggle('ysp-on', on);
+      const title = on ? 'Hide the speed panel on this channel' : 'Show the speed panel on this channel';
+      if (btn.title !== title) btn.title = title;
+      if (btn.getAttribute('aria-pressed') !== String(on)) btn.setAttribute('aria-pressed', String(on));
+    }
+
     // ---------- Wiring ----------
 
     function ensurePanel() {
       target = pickTarget();
       if (!target) {
         document.getElementById(PANEL_ID)?.remove();
+        document.getElementById(YT_TOGGLE_ID)?.remove();
         return;
       }
       if (target.key instanceof HTMLVideoElement && target.key !== boundVideo) {
         boundVideo = target.key;
         bindVideo(boundVideo, { guardOwnRate: site.guardOwnRate, onChange: highlight });
       }
-      if (settings.hidden) {
+      ensureChannelToggle();
+      if (panelHidden()) {
         document.getElementById(PANEL_ID)?.remove();
         return;
       }
@@ -690,6 +761,7 @@
     settings = {
       speed: Number(data.speed) || 1,
       hidden: !!data.hidden,
+      ytChannels: data.ytChannels || {},
       scale: Number(data.scale) || 1,
       shotFormat: data.shotFormat || 'jpg',
       positions: data.positions || {},

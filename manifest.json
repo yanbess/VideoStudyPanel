@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Video Study Panel",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Learn from videos: speed control and one-click screenshots on YouTube, Udemy, Coursera, Skillshare, Stepik and other course sites.",
   "icons": {
     "16": "icons/icon16.png",
