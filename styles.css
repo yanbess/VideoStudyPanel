@@ -133,14 +133,14 @@
   flex: none;
   align-items: center;
   box-sizing: border-box;
-  height: 36px;
+  height: 40px;
   margin: 0 8px 0 0;
   padding: 0 16px 0 10px;
   background: var(--yt-spec-badge-chip-background, rgba(255, 255, 255, 0.1));
   color: var(--yt-spec-text-primary, #f1f1f1);
   border: none;
-  border-radius: 18px;
-  font: 500 14px/36px "Roboto", "Arial", sans-serif;
+  border-radius: 20px;
+  font: 500 14px/40px "Roboto", "Arial", sans-serif;
   white-space: nowrap;
   cursor: pointer;
 }
