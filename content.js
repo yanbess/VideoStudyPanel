@@ -75,18 +75,23 @@
     return null;
   }
 
-  // Keeps the chosen speed on a <video>. Many players (Udemy, and others) keep
-  // their own speed and put it back on play, pause, or seek: right after those,
-  // the chosen speed is restored.
-  function bindVideo(video, { guardOwnRate, onChange }) {
+  // Keeps the chosen speed on a <video> while the panel is on (isOn()); while it
+  // is off, the video plays at normal speed and the site's own speed menu is
+  // left alone. Many players (Udemy, and others) keep their own speed and put it
+  // back on play, pause, or seek: right after those, the chosen speed is restored.
+  function bindVideo(video, { guardOwnRate, onChange, isOn }) {
     let guardUntil = 0;
+    const apply = () => {
+      const rate = isOn() ? settings.speed : 1;
+      if (video.playbackRate !== rate) video.playbackRate = rate;
+    };
     const guard = () => {
-      if (!guardOwnRate) return;
+      if (!guardOwnRate || !isOn()) return;
       guardUntil = performance.now() + 2000;
-      if (video.playbackRate !== settings.speed) video.playbackRate = settings.speed;
+      apply();
     };
     video.addEventListener('ratechange', () => {
-      if (performance.now() < guardUntil && video.playbackRate !== settings.speed) {
+      if (isOn() && performance.now() < guardUntil && video.playbackRate !== settings.speed) {
         video.playbackRate = settings.speed;
         return;
       }
@@ -96,10 +101,8 @@
     video.addEventListener('pause', () => { guard(); onChange(); });
     video.addEventListener('seeked', guard);
     // Sites reset the speed when a new video loads, so re-apply the saved one
-    video.addEventListener('loadedmetadata', () => {
-      if (video.playbackRate !== settings.speed) video.playbackRate = settings.speed;
-    });
-    if (video.playbackRate !== settings.speed) video.playbackRate = settings.speed;
+    video.addEventListener('loadedmetadata', apply);
+    apply();
   }
 
   function togglePlay(video) {
@@ -143,6 +146,12 @@
   function runInFrame() {
     let video = null;
     let welcomed = false;
+    // Frames are only used on course sites, where one global setting hides the panel
+    const isOn = () => !settings.hidden;
+    const applyRate = () => {
+      const rate = isOn() ? settings.speed : 1;
+      if (video.playbackRate !== rate) video.playbackRate = rate;
+    };
 
     const post = (data) => window.top.postMessage({ [MSG]: true, ...data }, '*');
 
@@ -162,7 +171,7 @@
       if (v && v !== video) {
         video = v;
         if (welcomed) {
-          bindVideo(video, { guardOwnRate: true, onChange: report });
+          bindVideo(video, { guardOwnRate: true, onChange: report, isOn });
         }
       }
       report();
@@ -173,11 +182,11 @@
       if (e.source !== window.top || !d || !d[MSG]) return;
       if (d.type === 'welcome' && !welcomed) {
         welcomed = true;
-        if (video) bindVideo(video, { guardOwnRate: true, onChange: report });
+        if (video) bindVideo(video, { guardOwnRate: true, onChange: report, isOn });
         report();
       }
       if (!welcomed || !video) return;
-      if (d.type === 'setRate' && SPEEDS.includes(d.rate)) {
+      if (d.type === 'setRate' && SPEEDS.includes(d.rate) && isOn()) {
         settings.speed = d.rate;
         video.playbackRate = d.rate;
       } else if (d.type === 'toggle') {
@@ -191,7 +200,7 @@
     });
 
     window.addEventListener('keydown', (e) => {
-      if (!welcomed || !video) return;
+      if (!welcomed || !video || !isOn()) return;
       const action = hotkeyAction(e);
       if (!action) return;
       e.preventDefault();
@@ -202,9 +211,13 @@
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== 'local') return;
       onSettingsChanged(changes);
-      if (changes.speed && welcomed && video && video.playbackRate !== settings.speed) {
-        video.playbackRate = settings.speed;
+      if (!welcomed || !video) return;
+      // The panel was turned back on in the tab in front: it keeps this video's speed
+      // (the page saves it as the panel's speed)
+      if (changes.hidden && isOn() && !changes.speed && document.visibilityState === 'visible') {
+        settings.speed = video.playbackRate;
       }
+      if (changes.speed || changes.hidden) applyRate();
     });
 
     // Light polling: frames are small documents, and this also re-sends the
@@ -273,6 +286,7 @@
 
     let target = null; // what the panel controls now, see localTarget/frameTarget
     let boundVideo = null;
+    let boundHidden = null; // panelHidden() when the bound video's speed was last set
     let observedEl = null;
     let toastTimer = 0;
     let shotId = 0;
@@ -385,7 +399,7 @@
         });
         if (isNew) e.source.postMessage({ [MSG]: true, type: 'welcome' }, '*');
         scheduleEnsure();
-      } else if (d.type === 'hotkey' && target && target.key === e.source) {
+      } else if (d.type === 'hotkey' && target && target.key === e.source && !panelHidden()) {
         runAction(d.action);
       } else if (d.type === 'shotResult') {
         const p = pendingShots.get(d.id);
@@ -509,7 +523,7 @@
     }
 
     function onKeyDown(e) {
-      if (!target) return;
+      if (!target || panelHidden()) return;
       const action = hotkeyAction(e);
       if (!action) return;
       // Take the key away from the site (YouTube uses +/- for caption size)
@@ -662,12 +676,24 @@
       return !key || !settings.ytChannels[key];
     }
 
+    // When the panel is turned on, it takes the speed the video plays at now
+    // (set in the site's own player while the panel was off, or 1× after it was turned off)
+    function adoptVideoRate() {
+      const rate = target ? Number(target.rate()) : 0;
+      if (!rate || rate === settings.speed) return;
+      settings.speed = rate;
+      save({ speed: rate });
+    }
+
     function toggleChannel() {
       const key = site.channelKey();
       if (!key) return;
       const channels = { ...settings.ytChannels };
       if (channels[key]) delete channels[key];
-      else channels[key] = true;
+      else {
+        channels[key] = true;
+        adoptVideoRate();
+      }
       settings.ytChannels = channels;
       save({ ytChannels: channels });
       ensurePanel();
@@ -715,12 +741,19 @@
         document.getElementById(YT_TOGGLE_ID)?.remove();
         return;
       }
-      if (target.key instanceof HTMLVideoElement && target.key !== boundVideo) {
-        boundVideo = target.key;
-        bindVideo(boundVideo, { guardOwnRate: site.guardOwnRate, onChange: highlight });
+      const hidden = panelHidden();
+      if (target.key instanceof HTMLVideoElement) {
+        if (target.key !== boundVideo) {
+          boundVideo = target.key;
+          bindVideo(boundVideo, { guardOwnRate: site.guardOwnRate, onChange: highlight, isOn: () => !panelHidden() });
+        } else if (hidden !== boundHidden) {
+          // The panel was turned on or off: the saved speed, or normal speed while it is off
+          target.setRate(hidden ? 1 : settings.speed);
+        }
+        boundHidden = hidden;
       }
       ensureChannelToggle();
-      if (panelHidden()) {
+      if (hidden) {
         document.getElementById(PANEL_ID)?.remove();
         return;
       }
@@ -752,7 +785,12 @@
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== 'local') return;
       onSettingsChanged(changes);
-      if (changes.speed && target && target.rate() !== settings.speed) target.setRate(settings.speed);
+      // The panel was turned back on in the settings: the tab in front keeps its video's speed
+      if (changes.hidden && !settings.hidden && !site.perChannel && document.visibilityState === 'visible') {
+        adoptVideoRate();
+      }
+      // Speed changed in another tab: only videos with the panel on follow it
+      if (changes.speed && target && !panelHidden() && target.rate() !== settings.speed) target.setRate(settings.speed);
       ensurePanel();
     });
 
